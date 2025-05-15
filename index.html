@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurants</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .address a {
+      text-decoration: none;
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+    }
+    .address a img {
+      margin-left: 6px;
+      width: 16px;
+      height: 16px;
+    }
+    .category-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding: 10px 0;
+  margin-bottom: 16px;
+}
+
+.category-icon {
+  flex: 0 0 auto;
+  text-align: center;
+  cursor: pointer;
+  width: 72px;
+}
+
+.category-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
+  </style>
+  
+ <script>
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    window.location.href = "user_login.html";
+  }
+</script>
+</head>
+
+<nav class="sidebar-nav">
+  <a href="restaurants.html" class="sidebar-item" title="Home">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="#searchInput" class="sidebar-item" title="Search">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="sidebar-item" title="Cart">
+    <img src="assets/img/icons/orders.png" alt="Orders">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="sidebar-item" title="Account">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+
+<body>
+<div class="search-wrapper">
+  <img src="assets/img/icons/search.png" alt="Search" class="search-icon">
+  <input type="text" id="searchInput" placeholder="Search for dishes, restaurants, or cuisines..." />
+</div>
+
+<div class="category-carousel" id="categoryCarousel">
+  <!-- Example categories -->
+  <div class="category-icon" data-category="pizza">
+    <img src="assets/img/carousel/7.png" alt="Pizza">
+    <span>Pizza</span>
+  </div>
+  <div class="category-icon" data-category="kota">
+    <img src="assets/img/carousel/15.png" alt="Kota">
+    <span>Kota</span>
+  </div>
+  <div class="category-icon" data-category="african">
+    <img src="assets/img/carousel/16.png" alt="Pizza">
+    <span>African</span>
+  </div>
+   <div class="category-icon" data-category="burger">
+    <img src="assets/img/carousel/2.png" alt="Burger">
+    <span>Burger</span>
+  </div>
+    <div class="category-icon" data-category="breakfast">
+    <img src="assets/img/carousel/1.png" alt="Breakfast">
+    <span>Breakfast</span>
+  </div>
+  <!-- Add more as needed -->
+</div>
+
+  <div id="restaurant-carousels"></div>
+
+  <script src="assets/js/restaurants.js"></script>
+  <script src="assets/js/script.js"></script>
+<script>
+  const container = document.getElementById('restaurant-carousels');
+  const searchInput = document.getElementById('searchInput');
+
+  function renderCarousels(filteredData) {
+    container.innerHTML = ""; // Clear existing carousels
+
+    Object.keys(filteredData).forEach(category => {
+      const restaurants = filteredData[category];
+      if (restaurants.length === 0) return;
+
+      const carousel = document.createElement('div');
+      carousel.className = 'carousel';
+
+      const title = document.createElement('h2');
+      title.textContent = category;
+
+      const row = document.createElement('div');
+      row.className = 'carousel-row';
+
+      restaurants.forEach(restaurant => {
+        const card = document.createElement('a');
+        card.href = `restaurant.html?id=${restaurant.id}`;
+        card.className = 'restaurant-card';
+
+        const stars = "★".repeat(Math.floor(restaurant.rating)) +
+                      (restaurant.rating % 1 >= 0.5 ? "½" : "");
+
+        card.innerHTML = `
+          <img src="${restaurant.image}" alt="${restaurant.name}" />
+          <h3>${restaurant.name}</h3>
+          <p>${restaurant.description}</p>
+          <p class="rating">Rating: ${stars}</p>
+          <p class="address">
+            <a href="${restaurant.mapUrl}" target="_blank">
+              ${restaurant.address}
+              <img src="assets/img/icons/pin.png" alt="Map Pin">
+            </a>
+          </p>
+        `;
+
+        row.appendChild(card);
+      });
+
+      carousel.appendChild(title);
+      carousel.appendChild(row);
+      container.appendChild(carousel);
+    });
+  }
+
+  function filterRestaurants(query) {
+    query = query.toLowerCase();
+
+    const filtered = {};
+
+    Object.entries(restaurantCategories).forEach(([category, restaurants]) => {
+      const matched = restaurants.filter(r => 
+        r.name.toLowerCase().includes(query) ||
+        r.description.toLowerCase().includes(query) ||
+        category.toLowerCase().includes(query) ||
+        (r.address && r.address.toLowerCase().includes(query)) ||
+        (r.rating && String(r.rating).includes(query))
+      );
+
+      if (matched.length > 0) {
+        filtered[category] = matched;
+      }
+    });
+
+    renderCarousels(filtered);
+  }
+
+  // Initial render
+  renderCarousels(restaurantCategories);
+
+  // Event listener
+  searchInput.addEventListener('input', e => {
+    filterRestaurants(e.target.value);
+  });
+</script>
+
+<footer class="bottom-nav">
+  <a href="restaurants.html" class="nav-item">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="#searchInput" class="nav-item">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="nav-item">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="nav-item">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</footer>
+</body>
+</html>
