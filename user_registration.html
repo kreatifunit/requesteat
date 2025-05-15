@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <title>User Registration</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #25D366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1ebd58;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+        margin-bottom: 8vh;
+        margin-top: 8vh;
+      }
+    }
+  </style>
+</head>
+<body>
+<header class="logo-header">
+  <img src="assets/img/logo.png" alt="Logo" class="logo-img">
+</header>
+
+<!-- Sidebar -->
+<nav class="sidebar-nav">
+  <a href="restaurants.html" class="sidebar-item" title="Home">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="restaurants.html#searchInput" class="sidebar-item" title="Search">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="sidebar-item" title="Cart">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="#" class="sidebar-item" title="Account">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+  <div class="container">
+    <h2>User Registration</h2>
+    <form id="registrationForm">
+      <input type="text" id="fullName" placeholder="Full Names" required />
+      <input type="text" id="contactNumber" placeholder="Contact Number" required />
+      <input type="email" id="email" placeholder="Email Address" required />
+      <textarea id="homeAddress" placeholder="Home Address" rows="3" required></textarea>
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="rePassword" placeholder="Re-enter Password" required />
+      <button type="submit">Register</button>
+  <p id="status"></p>
+  <p style="text-align:center; margin-top: 10px;">
+    Already have an account? <a href="user_login.html">Login here</a>
+  </p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const fullName = document.getElementById('fullName').value.trim();
+      const contact = document.getElementById('contactNumber').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const address = document.getElementById('homeAddress').value.trim();
+      const password = document.getElementById('password').value;
+      const rePassword = document.getElementById('rePassword').value;
+
+      if (password !== rePassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      const message = `New Registration:
+Full Name: ${fullName}
+Contact Number: ${contact}
+Email: ${email}
+Home Address: ${address}
+Password: ${password}`;
+
+      const phoneNumber = "27726962588"; // Replace with your number, e.g., 27631234567
+      const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    });
+  </script>
+</body>
+
+<!-- Bottom Nav -->
+<footer class="bottom-nav">
+  <a href="restaurants.html" class="nav-item">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="restaurants.html#searchInput" class="nav-item">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="nav-item">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="nav-item">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</footer>
+</html>

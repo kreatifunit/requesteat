@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant Details</title>
+<script>
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    window.location.href = "user_login.html";
+  }
+</script>
+<style>
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", sans-serif;
+  background-color: #f8f8f8;
+  color: #333;
+}
+.search-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #fff;
+  padding: 10px 15px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+}
+
+.search-wrapper input {
+  width: 100%;
+  max-width: 600px; /* controls width on desktop */
+  padding: 10px 16px 10px 38px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 15px;
+  outline: none;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  opacity: 0.5;
+}
+
+.sidebar-nav {
+  display: none; /* hidden by default */
+}
+
+@media (min-width: 768px) {
+  .sidebar-nav {
+    position: fixed;
+    top: 3vh;
+    left: 0;
+    width: 70px;
+    height: 100vh;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    z-index: 1000;
+  }
+
+  .sidebar-nav .sidebar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: #444;
+    font-size: 10px;
+  }
+
+  .sidebar-nav .sidebar-item img {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  body {
+    padding-left: 80px; /* make space for sidebar */
+  }
+}
+h1, h2 {
+  text-align: center;
+}
+
+/* UberEats-style enhancements */
+.restaurant-banner {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0;
+  margin-bottom: 10px;
+  margin-top: 8vh;
+}
+
+.restaurant-meta {
+  padding: 16px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.restaurant-meta h1 {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.restaurant-meta p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Menu items list */
+.menu-list {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 600px) {
+  .menu-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.menu-card {
+  display: flex;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.menu-img {
+  width: 120px;
+  height: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.menu-details {
+  padding: 12px;
+  flex: 1;
+}
+
+.menu-details h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.menu-details p {
+  font-size: 13px;
+  color: #666;
+  margin: 4px 0;
+}
+
+.menu-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.menu-actions button {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  background-color: #0f9d58;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.menu-actions button:last-child {
+  background-color: #e91e63;
+}
+
+    .bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  z-index: 1000;
+}
+
+.bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  text-decoration: none;
+  color: #444;
+}
+
+.bottom-nav .nav-item img {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 2px;
+}
+
+h4 {
+    margin-bottom: 8vh;
+}
+
+
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar-nav">
+  <a href="restaurants.html" class="sidebar-item" title="Home">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="#menuSearch" class="sidebar-item" title="Search">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="sidebar-item" title="Cart">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="sidebar-item" title="Account">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+
+<!-- Search -->
+<div class="search-wrapper">
+  <img src="assets/img/icons/search.png" alt="Search" class="search-icon">
+  <input type="text" id="menuSearch" placeholder="Search for menu..." />
+</div>
+
+<!-- Restaurant Info -->
+<section id="restaurant-details" class="restaurant-info"></section>
+
+<!-- Menu Items -->
+<section>
+  <h2 style="padding: 0 16px;">Menu</h2>
+  <div id="menuItems" class="menu-list"></div>
+</section>
+<h4></h4>
+
+<!-- Load Scripts -->
+<script src="assets/js/restaurant.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const restaurantId = parseInt(params.get("id"));
+
+    if (!restaurantId) {
+      document.getElementById("restaurant-details").innerHTML = "<p>Restaurant ID is missing in the URL.</p>";
+      return;
+    }
+
+    const restaurant = restaurantData.find(r => r.id === restaurantId);
+
+    function renderMenuItems(menu, filter = "") {
+      return menu
+        .filter(item => item.name.toLowerCase().includes(filter.toLowerCase()))
+        .map(item => `
+          <div class="menu-card">
+            <img src="${item.image}" alt="${item.name}" class="menu-img" />
+            <div class="menu-details">
+              <h3>${item.name}</h3>
+              <p>${item.description || 'No description available.'}</p>
+              <p><strong>Price:</strong> ${item.price}</p>
+              <p><strong>Rating:</strong> ${item.rating || 'N/A'} ★</p>
+              <div class="menu-actions">
+                <button onclick='addToCart(${JSON.stringify(item)})'>Add to Cart</button>
+                <button onclick='addToFavourites(${JSON.stringify(item)})'>♥</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+    }
+
+    if (restaurant) {
+      document.getElementById("restaurant-details").innerHTML = `
+        <img src="${restaurant.image}" alt="${restaurant.name}" class="restaurant-banner" />
+        <div class="restaurant-meta">
+          <h1>${restaurant.name}</h1>
+          <p>${restaurant.description}</p>
+          <p><strong>Rating:</strong> ${restaurant.rating.average} ★ (${restaurant.rating.count})</p>
+          <p><strong>Address:</strong> <a href="${restaurant.mapLink}" target="_blank">${restaurant.address}</a></p>
+          <p><strong>Contact:</strong> ${restaurant.contact}</p>
+          <p><strong>Hours:</strong> ${restaurant.tradingHours}</p>
+          <p><strong>Cuisine:</strong> ${restaurant.cuisine}</p>
+        </div>
+      `;
+
+      const menuSection = document.getElementById("menuItems");
+      const restaurantInfoSection = document.getElementById("restaurant-details");
+
+      menuSection.innerHTML = renderMenuItems(restaurant.menu);
+
+      document.getElementById("menuSearch").addEventListener("input", (e) => {
+        const value = e.target.value.trim();
+        menuSection.innerHTML = renderMenuItems(restaurant.menu, value);
+        restaurantInfoSection.style.display = value.length > 0 ? "none" : "block";
+      });
+    } else {
+      document.getElementById("restaurant-details").innerHTML = "<p>Restaurant not found.</p>";
+    }
+  });
+
+  function addToCart(item) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existing = cart.find(i => i.name === item.name);
+
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({
+        name: item.name,
+        price: item.price,
+        quantity: 1
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(`${item.name} added to cart.`);
+  }
+
+function addToFavourites(item) {
+  const favourites = JSON.parse(localStorage.getItem("favourites")) || [];
+  const exists = favourites.find(fav => fav.name === item.name);
+
+  if (!exists) {
+    favourites.push(item);
+    localStorage.setItem("favourites", JSON.stringify(favourites));
+    alert(`${item.name} added to favourites.`);
+  } else {
+    alert(`${item.name} is already in favourites.`);
+  }
+}
+</script>
+
+<!-- Bottom Nav -->
+<footer class="bottom-nav">
+  <a href="restaurants.html" class="nav-item">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="#menuSearch" class="nav-item">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="nav-item">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="nav-item">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</footer>
+
+</body>
+</html>

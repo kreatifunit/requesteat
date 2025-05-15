@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Cart</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+<script>
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    window.location.href = "user_login.html";
+  }
+</script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      margin-top: 8vh;
+    }
+
+    #cartItems {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding: 12px 0;
+    }
+
+    .item-name {
+      font-weight: 600;
+    }
+
+    .item-controls {
+      display: flex;
+      align-items: center;
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      background: #28a745;
+      color: white;
+      font-size: 18px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+
+    .qty-btn:hover {
+      background: black;
+    }
+
+    .item-price {
+      font-size: 14px;
+      color: #444;
+    }
+
+    .total {
+      text-align: right;
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+.cart-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 8vh;
+}
+
+.cart-buttons button {
+  flex: 1 1 150px;
+  max-width: 200px;
+}
+
+button.checkout-btn,
+button.clear-btn {
+  padding: 12px 20px;
+  font-size: 16px;
+  width: 100%;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  
+}
+
+button.checkout-btn:hover,
+button.clear-btn:hover {
+  background: black;
+}
+
+button.clear-btn {
+  background: #dc3545;
+}
+
+.browse-btn {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 24px;
+  font-size: 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  max-width: 240px;
+  width: 90%;
+  text-align: center;
+  text-decoration: none;
+}
+
+.browse-btn:hover {
+  background: black;
+}
+
+    @media (max-width: 600px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .item-controls {
+        margin-top: 8px;
+      }
+
+      .total {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+    
+<!-- Sidebar -->
+<nav class="sidebar-nav">
+  <a href="restaurants.html" class="sidebar-item" title="Home">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="restaurants.html#searchInput" class="sidebar-item" title="Search">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="sidebar-item" title="Cart">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="sidebar-item" title="Account">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+
+<!-- Logo Header -->
+<header class="logo-header">
+  <img src="assets/img/logo.png" alt="Logo" class="logo-img">
+</header>
+
+<h2>Your Cart</h2>
+<div id="cartItems"></div>
+
+<div class="cart-buttons">
+  <button id="clearCartBtn" class="clear-btn" onclick="clearCart()">Clear Cart</button>
+  <button id="checkoutBtn" class="checkout-btn" onclick="goToCheckout()">Checkout</button>
+</div>
+<a id="browseMenusBtn" class="browse-btn" href="restaurants.html" style="display: none;">Browse Menus</a>
+
+<script>
+  function renderCart() {
+    const items = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartDiv = document.getElementById("cartItems");
+    const clearBtn = document.getElementById("clearCartBtn");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    const browseBtn = document.getElementById("browseMenusBtn");
+
+    cartDiv.innerHTML = "";
+
+    if (items.length === 0) {
+      cartDiv.innerHTML = "<p style='text-align:center;'>Your cart is empty.</p>";
+      clearBtn.style.display = "none";
+      checkoutBtn.style.display = "none";
+      browseBtn.style.display = "block";
+      return;
+    }
+
+    clearBtn.style.display = "block";
+    checkoutBtn.style.display = "block";
+    browseBtn.style.display = "none";
+
+    let total = 0;
+
+    items.forEach((item, index) => {
+      const priceValue = parseFloat(item.price.replace("R", "")) || 0;
+      const quantity = item.quantity || 1;
+      const subtotal = priceValue * quantity;
+      total += subtotal;
+
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "cart-item";
+      itemDiv.innerHTML = `
+        <div class="item-name">${item.name}</div>
+        <div class="item-controls">
+          <button class="qty-btn" onclick="updateQuantity(${index}, -1)">-</button>
+          <span>${quantity}</span>
+          <button class="qty-btn" onclick="updateQuantity(${index}, 1)">+</button>
+          <span class="item-price">= R${subtotal.toFixed(2)}</span>
+        </div>
+      `;
+      cartDiv.appendChild(itemDiv);
+    });
+
+    const totalDiv = document.createElement("div");
+    totalDiv.className = "total";
+    totalDiv.textContent = `Total: R${total.toFixed(2)}`;
+    cartDiv.appendChild(totalDiv);
+  }
+
+  function updateQuantity(index, change) {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (cart[index]) {
+      cart[index].quantity += change;
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+      }
+      localStorage.setItem("cart", JSON.stringify(cart));
+      renderCart();
+    }
+  }
+
+  function clearCart() {
+    if (confirm("Are you sure you want to clear your cart?")) {
+      localStorage.removeItem("cart");
+      renderCart();
+    }
+  }
+
+  function goToCheckout() {
+    window.location.href = "checkout.html";
+  }
+
+  renderCart();
+</script>
+
+<!-- Bottom Nav -->
+<footer class="bottom-nav">
+  <a href="restaurants.html" class="nav-item">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="restaurants.html#searchInput" class="nav-item">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="nav-item">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="nav-item">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</footer>
+
+</body>
+</html>

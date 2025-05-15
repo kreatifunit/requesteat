@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <title>User Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .login-container {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-top: 8vh;
+      margin-bottom: 8vh;
+    }
+    
+    input {
+      width: 90%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #25D366;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1ebe5b;
+    }
+    #status {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<header class="logo-header">
+  <img src="assets/img/logo.png" alt="Logo" class="logo-img">
+</header>
+
+<!-- Sidebar -->
+<nav class="sidebar-nav">
+  <a href="restaurants.html" class="sidebar-item" title="Home">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="restaurants.html#searchInput" class="sidebar-item" title="Search">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="sidebar-item" title="Cart">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="#" class="sidebar-item" title="Account">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+<div class="login-container">
+  <h2>User Login</h2>
+  <input type="email" id="email" placeholder="Email Address" required />
+  <input type="password" id="password" placeholder="Password" required />
+  <button onclick="login()">Login</button>
+  <p id="status"></p>
+  <p style="text-align:center; margin-top: 10px;">
+    Don't have an account? <a href="user_registration.html">Register here</a>
+  </p>
+</div>
+
+  <!-- Load users from users.js -->
+  <script src="accounts/users.js"></script>
+  <script>
+    function login() {
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value.trim();
+
+      const foundUser = users.find(user =>
+        user.email.toLowerCase() === email && user.password === password
+      );
+
+      const status = document.getElementById("status");
+
+      if (foundUser) {
+        localStorage.setItem('userId', foundUser.id); // Save user ID for later use
+        window.location.href = "user_profile.html";   // Redirect to dashboard
+      } else {
+        status.style.color = "red";
+        status.innerText = "Invalid email or password.";
+      }
+    }
+  </script>
+</body>
+<!-- Bottom Nav -->
+<footer class="bottom-nav">
+  <a href="restaurants.html" class="nav-item">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="restaurants.html#searchInput" class="nav-item">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="nav-item">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="nav-item">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</footer>
+</html>

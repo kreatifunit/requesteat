@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <title>User Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f7f7f7; }
+    .profile-menu {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .menu-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .menu-item:hover {
+      background: #f0f0f0;
+    }
+    .menu-item h3 {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    .menu-item p {
+      font-size: 14px;
+      color: #666;
+    }
+    #user-greeting {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .section {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: none;
+      animation: slideIn 0.4s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .back-btn {
+      margin-bottom: 10px;
+      display: inline-block;
+      background: #ccc;
+      padding: 5px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      color: #333;
+      cursor: pointer;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #444;
+    }
+  </style>
+</head>
+<body>
+
+<header class="logo-header">
+  <img src="assets/img/logo.png" alt="Logo" class="logo-img">
+</header>
+
+<!-- Sidebar -->
+<nav class="sidebar-nav">
+  <a href="restaurants.html" class="sidebar-item" title="Home">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="restaurants.html#searchInput" class="sidebar-item" title="Search">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="sidebar-item" title="Cart">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="sidebar-item" title="Account">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</nav>
+
+<div id="user-greeting">Loading...</div>
+
+<div class="profile-menu">
+  <div class="menu-item" onclick="revealSection('account')">
+    <h3>Manage Account</h3>
+    <p>Update personal details and shipping address</p>
+  </div>
+  <div class="menu-item" onclick="revealSection('orders')">
+    <h3>Order History</h3>
+    <p>View and track your orders</p>
+  </div>
+  <div class="menu-item" onclick="revealSection('rewards')">
+    <h3>View Rewards</h3>
+    <p>See coupons and loyalty points</p>
+  </div>
+  <div class="menu-item" onclick="logout()">
+    <h3>Logout</h3>
+    <p>Sign out of your account</p>
+  </div>
+</div>
+
+<!-- Sections -->
+<div id="account" class="section">
+  <div class="back-btn" onclick="goBack()">← Back</div>
+  <h3>Manage Account</h3>
+  <p><strong>Full Name:</strong> <span id="acc-name"></span></p>
+  <p><strong>Email:</strong> <span id="acc-email"></span></p>
+  <p><strong>Phone:</strong> <span id="acc-phone"></span></p>
+  <p><strong>Address:</strong> <span id="acc-address"></span></p>
+  <button onclick="requestUpdate()">Request Update</button>
+</div>
+
+<div id="orders" class="section">
+  <div class="back-btn" onclick="goBack()">← Back</div>
+  <h3>Order History</h3>
+  <p>All your recent orders will appear here.</p>
+</div>
+
+<div id="rewards" class="section">
+  <div class="back-btn" onclick="goBack()">← Back</div>
+  <h3>Rewards</h3>
+  <p><strong>Points:</strong> <span id="reward-points">Loading...</span></p>
+  <div>
+    <strong>Coupons:</strong>
+    <ul id="reward-coupons">
+      <li>Loading...</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<footer class="bottom-nav">
+  <a href="restaurants.html" class="nav-item">
+    <img src="assets/img/icons/home.png" alt="Home">
+    <span>Home</span>
+  </a>
+  <a href="restaurants.html#searchInput" class="nav-item">
+    <img src="assets/img/icons/search.png" alt="Search">
+    <span>Search</span>
+  </a>
+  <a href="cart.html" class="nav-item">
+    <img src="assets/img/icons/orders.png" alt="Cart">
+    <span>Cart</span>
+  </a>
+  <a href="user_profile.html" class="nav-item">
+    <img src="assets/img/icons/account.png" alt="Account">
+    <span>Account</span>
+  </a>
+</footer>
+<script src="accounts/users.js"></script>
+<script>
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    window.location.href = "user_login.html";
+  }
+
+  const loggedInUser = users.find(u => u.id == userId);
+  const greeting = document.getElementById("user-greeting");
+
+  if (loggedInUser) {
+    greeting.textContent = `Welcome, ${loggedInUser.fullName}`;
+    // Display rewards
+  const pointsEl = document.getElementById("reward-points");
+  const couponsEl = document.getElementById("reward-coupons");
+
+  if (loggedInUser.rewards) {
+    pointsEl.textContent = loggedInUser.rewards.points ?? 0;
+    
+    // Clear placeholder
+    couponsEl.innerHTML = "";
+
+    if (loggedInUser.rewards.coupons.length > 0) {
+      loggedInUser.rewards.coupons.forEach(coupon => {
+        const li = document.createElement("li");
+        li.textContent = coupon;
+        couponsEl.appendChild(li);
+      });
+    } else {
+      couponsEl.innerHTML = "<li>No coupons available</li>";
+    }
+  } else {
+    pointsEl.textContent = "0";
+    couponsEl.innerHTML = "<li>No rewards found</li>";
+  }
+    // Fill in account section
+    document.getElementById("acc-name").textContent = loggedInUser.fullName || "N/A";
+    document.getElementById("acc-email").textContent = loggedInUser.email || "N/A";
+    document.getElementById("acc-phone").textContent = loggedInUser.contact|| "N/A";
+    document.getElementById("acc-address").textContent = loggedInUser.address || "N/A";
+  } else {
+    greeting.textContent = "User not found.";
+  }
+
+  function revealSection(id) {
+    document.querySelector(".profile-menu").style.display = "none";
+    document.querySelectorAll('.section').forEach(section => {
+      section.style.display = 'none';
+    });
+    document.getElementById(id).style.display = 'block';
+  }
+
+  function goBack() {
+    document.querySelectorAll('.section').forEach(section => {
+      section.style.display = 'none';
+    });
+    document.querySelector(".profile-menu").style.display = "block";
+  }
+
+  function requestUpdate() {
+    alert("Update request submitted! (This will be linked later.)");
+  }
+
+  function logout() {
+    localStorage.removeItem('userId');
+    window.location.href = "user_login.html";
+  }
+
+  // Auto logout after 30 minutes of inactivity
+  let logoutTimer;
+  function resetTimer() {
+    clearTimeout(logoutTimer);
+    logoutTimer = setTimeout(logout, 1800000); // 30 mins
+  }
+
+  window.onload = resetTimer;
+  document.onmousemove = resetTimer;
+  document.onkeypress = resetTimer;
+</script>
+
+</body>
+</html>
